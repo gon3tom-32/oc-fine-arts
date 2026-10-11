@@ -1,0 +1,37 @@
+---
+import site from "../content/site.json";
+
+const { headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}`;
+---
+
+<section class="card who" aria-labelledby="who-heading">
+  <Heading id="who-heading">Who to ask</Heading>
+  <dl>
+    {
+      site.whoToAsk.map((row) => (
+        <div class="who-row">
+          <dt>{row.topic}</dt>
+          <dd>
+            {row.who}
+            {row.email && (
+              <>
+                {" · "}
+                <a href={`mailto:${row.email}`}>{row.email}</a>
+              </>
+            )}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
+
+<style>
+  .who dl { margin: 0; }
+  .who-row { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .who-row:last-child { border-bottom: 0; }
+  .who dt { font-weight: 700; }
+  .who dd { margin: 0; overflow-wrap: anywhere; }
+  .who a { display: inline-block; min-height: 24px; }
+</style>

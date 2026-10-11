@@ -1,0 +1,57 @@
+---
+// "Put it on your phone": subscribe to everything, or to one program.
+import { programs } from "../lib/programs.js";
+import { subscribeLinks } from "../lib/urls.js";
+
+const { only, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}`;
+const SubHeading = `h${headingLevel + 1}`;
+const options = only
+  ? [{ id: only.id, label: `${only.name} only` }]
+  : [{ id: undefined, label: "Everything" }, ...programs.map((program) => ({ id: program.id, label: `${program.name} only` }))];
+const withLinks = options.map((option) => ({ ...option, links: subscribeLinks(option.id, Astro.site) }));
+---
+
+<section class="subscribe-card" aria-labelledby={`subscribe-${only?.id ?? "all"}`}>
+  <Heading id={`subscribe-${only?.id ?? "all"}`}>Put it on your phone</Heading>
+  <p>
+    Subscribe once and new events show up in your phone's calendar on their own. Changes can take a few hours to appear.
+  </p>
+  <div class="subscribe-options">
+    {
+      withLinks.map((option) => (
+        <div class="subscribe-option">
+          <SubHeading>{option.label}</SubHeading>
+          <div class="btn-row">
+            <a class="btn btn-small btn-orange" href={option.links.webcal}>
+              iPhone or Mac<span class="sr-only">: subscribe to {option.label}</span>
+            </a>
+            <a class="btn btn-small btn-outline" href={option.links.google} target="_blank" rel="noopener">
+              Google Calendar<span class="sr-only">: subscribe to {option.label} (opens in a new tab)</span>
+            </a>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+  <details class="subscribe-help">
+    <summary>Other calendar apps</summary>
+    <p>Copy one of these addresses into your calendar app's "subscribe" or "add calendar from URL" option:</p>
+    <ul>
+      {
+        withLinks.map((option) => (
+          <li>
+            {option.label}: <a href={option.links.https}>{option.links.https}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </details>
+</section>
+
+<style>
+  .subscribe-help { margin-top: 16px; }
+  .subscribe-help summary { cursor: pointer; font-weight: 700; min-height: var(--tap); display: flex; align-items: center; }
+  .subscribe-help ul { padding-left: 20px; margin: 0; overflow-wrap: anywhere; }
+  .subscribe-help li { margin-bottom: 6px; }
+</style>

@@ -1,0 +1,200 @@
+/* Colors and sizes live here as variables so they are easy to swap. */
+:root {
+  --white: #ffffff;
+  --navy: #14305e;
+  --navy-light: #24467f;
+  --orange: #f47b20;
+  --wash: #f2f5fa;
+  --rule: #e1e6f0;
+  --muted: #4a5875;
+
+  /* Program colors. Tags always carry text, so color is never the only signal. */
+  --art: #c4540a;
+  --art-tag-bg: #fde6d2;
+  --art-tag-text: #8a3a00;
+  --choir: #14305e;
+  --choir-tag-bg: #dce3f0;
+  --choir-tag-text: #14305e;
+  --mt: #2f6fb8;
+  --mt-tag-bg: #dce9f7;
+  --mt-tag-text: #1f4f8a;
+
+  --font-heading: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --radius: 16px;
+  --radius-small: 10px;
+  --tap: 44px;
+  --gutter: 16px;
+  --max: 1080px;
+  --focus: 3px solid var(--orange);
+}
+
+.p-art { --p: var(--art); --p-tag-bg: var(--art-tag-bg); --p-tag-text: var(--art-tag-text); }
+.p-choir { --p: var(--choir); --p-tag-bg: var(--choir-tag-bg); --p-tag-text: var(--choir-tag-text); }
+.p-musical-theater { --p: var(--mt); --p-tag-bg: var(--mt-tag-bg); --p-tag-text: var(--mt-tag-text); }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--white);
+  color: var(--navy);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0 0 0.5em;
+}
+h1 { font-size: clamp(2rem, 7vw, 3.25rem); letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.4rem, 4.5vw, 1.9rem); }
+h3 { font-size: 1.15rem; }
+p { margin: 0 0 1em; }
+
+a { color: var(--navy); text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible { outline: var(--focus); outline-offset: 3px; border-radius: 4px; }
+
+img { max-width: 100%; height: auto; }
+
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+.section { padding: 40px 0; }
+.section + .section { padding-top: 0; }
+.muted { color: var(--muted); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: absolute; left: var(--gutter); top: -100px; z-index: 10;
+  background: var(--navy); color: var(--white); padding: 10px 16px; border-radius: 999px;
+}
+.skip-link:focus { top: 8px; }
+
+/* Plain page header (Calendar, Contact) */
+.page-hero { background: var(--wash); padding: 32px 0 28px; margin-bottom: 28px; }
+.page-hero p { margin: 0; max-width: 60ch; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: var(--tap); padding: 10px 20px;
+  border-radius: 999px; border: 2px solid var(--navy);
+  font: 700 1rem/1.2 var(--font-body); text-decoration: none; cursor: pointer;
+  background: var(--navy); color: var(--white);
+}
+.btn:hover { background: var(--navy-light); border-color: var(--navy-light); }
+.btn-outline { background: var(--white); color: var(--navy); }
+.btn-outline:hover { background: var(--wash); border-color: var(--navy); }
+.btn-orange { background: var(--orange); border-color: var(--orange); color: var(--navy); }
+.btn-orange:hover { background: #ff8f3a; border-color: #ff8f3a; }
+.btn-small { min-height: var(--tap); padding: 8px 14px; font-size: 0.95rem; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.text-link {
+  display: inline-flex; align-items: center; min-height: var(--tap);
+  font-weight: 700; background: none; border: 0; padding: 0; color: var(--navy);
+  font-family: var(--font-body); font-size: 1rem; cursor: pointer; text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Cards */
+.card {
+  background: var(--white); border: 1px solid var(--rule); border-radius: var(--radius);
+  padding: 20px;
+}
+
+/* Program tag pill */
+.tag {
+  display: inline-block; padding: 2px 10px; border-radius: 999px;
+  background: var(--p-tag-bg); color: var(--p-tag-text);
+  font-size: 0.8rem; font-weight: 700; line-height: 1.6; white-space: nowrap;
+}
+
+/* Date badge: month over day */
+.badge {
+  flex: none; width: 56px; height: 56px; border-radius: 14px;
+  background: var(--orange); color: var(--navy);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: var(--font-heading); line-height: 1;
+}
+.badge-month { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; }
+.badge-day { font-size: 1.45rem; font-weight: 700; margin-top: 2px; }
+
+/* Filter chips: chips on phones, plain checkboxes on wider screens */
+.filters { border: 0; padding: 0; margin: 0 0 16px; }
+.filters legend { font-weight: 700; margin-bottom: 8px; padding: 0; }
+.filter-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip span {
+  display: inline-flex; align-items: center; gap: 6px; min-height: var(--tap); padding: 8px 16px;
+  border-radius: 999px; border: 2px solid var(--rule); background: var(--white);
+  font-weight: 700; cursor: pointer; user-select: none;
+}
+.chip span::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--p); }
+.chip input:checked + span { border-color: var(--p); background: var(--p-tag-bg); color: var(--p-tag-text); }
+.chip input:checked + span::after { content: "✓"; font-size: 0.85em; }
+.chip input:focus-visible + span { outline: var(--focus); outline-offset: 2px; }
+
+@media (min-width: 900px) {
+  .filters-checkboxes .filter-options { flex-direction: column; gap: 4px; }
+  .filters-checkboxes .chip input {
+    position: static; opacity: 1; width: 20px; height: 20px; margin: 0; accent-color: var(--navy);
+  }
+  .filters-checkboxes .chip { display: flex; align-items: center; gap: 10px; min-height: var(--tap); }
+  .filters-checkboxes .chip span,
+  .filters-checkboxes .chip input:checked + span {
+    border: 0; background: none; padding: 0; min-height: 0; color: var(--navy);
+  }
+  .filters-checkboxes .chip input:checked + span::after { content: none; }
+  .filters-checkboxes .chip input:focus-visible + span { outline: none; }
+}
+
+/* Event rows with expandable details */
+.event-list { list-style: none; margin: 0; padding: 0; }
+.event { border-bottom: 1px solid var(--rule); }
+.event:first-child { border-top: 1px solid var(--rule); }
+.event summary {
+  display: flex; gap: 14px; align-items: center; padding: 14px 4px; cursor: pointer; list-style: none;
+  min-height: var(--tap);
+}
+.event summary::-webkit-details-marker { display: none; }
+.event-main { flex: 1; min-width: 0; }
+.event-title { display: block; font-weight: 700; font-size: 1.05rem; }
+.event-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; color: var(--muted); font-size: 0.95rem; }
+.event-chevron { flex: none; width: 24px; height: 24px; transition: transform 0.15s; }
+.event details[open] .event-chevron { transform: rotate(180deg); }
+.event-details { padding: 0 4px 18px 74px; }
+.event-details dl { margin: 0 0 12px; display: grid; gap: 4px; }
+.event-details dt { font-weight: 700; }
+.event-details dd { margin: 0 0 6px; }
+.event-description { white-space: pre-line; overflow-wrap: anywhere; }
+@media (max-width: 520px) { .event-details { padding-left: 4px; } }
+
+.is-past { display: none; }
+.show-past .is-past { display: block; }
+.is-filtered, .is-over-limit, .is-empty { display: none !important; }
+
+.empty-note { padding: 18px 0; color: var(--muted); }
+
+/* Navy subscribe card */
+.subscribe-card { background: var(--navy); color: var(--white); border-radius: var(--radius); padding: 24px; }
+.subscribe-card h2, .subscribe-card h3 { color: var(--white); }
+.subscribe-card p { color: #d6deec; }
+.subscribe-card a:not(.btn) { color: var(--white); }
+.subscribe-options { display: grid; gap: 12px; margin-top: 16px; }
+.subscribe-option { background: var(--navy-light); border-radius: var(--radius-small); padding: 14px; }
+.subscribe-option h3 { margin-bottom: 10px; font-size: 1.05rem; }
+.subscribe-option .btn-outline { background: transparent; color: var(--white); border-color: var(--white); }
+.subscribe-option .btn-outline:hover { background: rgba(255, 255, 255, 0.12); }
+.subscribe-card :focus-visible { outline-color: var(--orange); }

@@ -1,0 +1,65 @@
+---
+import site from "../content/site.json";
+import { programs } from "../lib/programs.js";
+import { link } from "../lib/urls.js";
+
+const { current } = Astro.props;
+const items = [
+  { id: "calendar", label: "Calendar", href: link("calendar/") },
+  ...programs.map((program) => ({ id: program.id, label: program.name, href: link(`${program.id}/`) })),
+  { id: "contact", label: "Contact", href: link("contact/") },
+];
+---
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href={link()}>
+      <span class="logo" aria-hidden="true">
+        <!-- Placeholder mark. Replace with the school logo. -->
+        OC
+      </span>
+      <span class="brand-text">
+        <span class="brand-dept">{site.departmentName}</span>
+        <span class="brand-school">{site.schoolName}</span>
+      </span>
+    </a>
+    <nav aria-label="Main">
+      <ul>
+        {
+          items.map((item) => (
+            <li>
+              <a href={item.href} aria-current={current === item.id ? "page" : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header { border-bottom: 1px solid var(--rule); background: var(--white); }
+  .header-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding-top: 12px; padding-bottom: 12px; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; min-height: var(--tap); }
+  .logo {
+    width: 44px; height: 44px; border-radius: 50%; background: var(--orange); color: var(--navy);
+    display: grid; place-items: center; font: 700 1rem var(--font-heading); flex: none;
+  }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+  .brand-dept { font: 700 1.15rem var(--font-heading); }
+  .brand-school { font-size: 0.85rem; color: var(--muted); }
+  nav ul { list-style: none; margin: 0 -10px; padding: 0; display: flex; flex-wrap: wrap; }
+  nav a {
+    display: flex; align-items: center; min-height: var(--tap); padding: 0 10px;
+    font-weight: 700; text-decoration: none; border-radius: 999px;
+  }
+  nav a:hover { background: var(--wash); }
+  nav a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--orange); text-decoration-thickness: 3px; text-underline-offset: 6px; }
+  @media (max-width: 640px) {
+    nav { width: 100%; }
+    nav ul { margin: 0 -10px; }
+    nav a { padding: 0 10px; font-size: 0.98rem; }
+  }
+</style>

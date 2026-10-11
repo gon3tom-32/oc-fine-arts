@@ -1,0 +1,9 @@
+{
+  "_help": "One Google Calendar per program. Paste each calendar's 'Public address in iCal format' into icsUrl (Google Calendar > Settings > the calendar > Integrate calendar). While icsUrl is empty, the site uses the sample file instead.",
+  "timeZone": "America/Los_Angeles",
+  "programs": [
+    { "id": "art", "icsUrl": "", "sampleFile": "sample-data/art.ics" },
+    { "id": "choir", "icsUrl": "", "sampleFile": "sample-data/choir.ics" },
+    { "id": "musical-theater", "icsUrl": "", "sampleFile": "sample-data/musical-theater.ics" }
+  ]
+}

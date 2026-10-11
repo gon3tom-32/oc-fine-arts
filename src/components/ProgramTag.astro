@@ -1,0 +1,7 @@
+---
+import { programById } from "../lib/programs.js";
+
+const { program } = Astro.props;
+---
+
+<span class={`tag p-${program}`}>{programById[program]?.name ?? program}</span>

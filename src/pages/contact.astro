@@ -1,0 +1,35 @@
+---
+import Base from "../layouts/Base.astro";
+import WhoToAsk from "../components/WhoToAsk.astro";
+import site from "../content/site.json";
+---
+
+<Base title="Contact" current="contact" description="Who to ask about Art, Choir, and Musical Theater.">
+  <section class="page-hero">
+    <div class="wrap">
+      <h1>Contact</h1>
+      <p>Questions about fine arts at {site.schoolName}? Here is who to ask.</p>
+    </div>
+  </section>
+
+  <div class="wrap contact-layout">
+    <section class="card" aria-labelledby="teacher-heading">
+      <h2 id="teacher-heading">{site.teacher.name}</h2>
+      <p>{site.teacher.title}<br />Art, Choir, and Musical Theater</p>
+      <p><a href={`mailto:${site.teacher.email}`}>{site.teacher.email}</a></p>
+      <a class="btn" href={`mailto:${site.teacher.email}`}>Email the teacher</a>
+    </section>
+    <WhoToAsk headingLevel={2} />
+    <section class="card" aria-labelledby="ps-heading">
+      <h2 id="ps-heading">Announcements</h2>
+      <p>News, reminders, and alerts go out on ParentSquare. This site is where to check dates and details.</p>
+      <a class="btn btn-outline" href={site.parentSquareUrl}>Open ParentSquare</a>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .contact-layout { display: grid; gap: 16px; }
+  @media (min-width: 760px) { .contact-layout { grid-template-columns: 1fr 1fr; } }
+  .contact-layout a { overflow-wrap: anywhere; }
+</style>

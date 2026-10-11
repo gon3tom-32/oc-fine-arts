@@ -1,0 +1,17 @@
+{
+  "schoolName": "Orange County Classical Academy",
+  "departmentName": "Fine Arts",
+  "tagline": "[One sentence about the fine arts program, for example what students learn and why it matters.]",
+  "teacher": {
+    "name": "[Teacher name]",
+    "title": "Fine Arts Teacher",
+    "email": "teacher@example.org"
+  },
+  "parentSquareUrl": "https://www.parentsquare.com/",
+  "whoToAsk": [
+    { "topic": "Rehearsals, concerts, art supplies, attire", "who": "[Teacher name]", "email": "teacher@example.org" },
+    { "topic": "Absences and early pickup", "who": "[School front office]", "email": "office@example.org" },
+    { "topic": "ParentSquare login or notifications", "who": "[School front office]", "email": "office@example.org" }
+  ],
+  "footerNote": "Student photos shared only with approval"
+}

@@ -1,0 +1,79 @@
+---
+// One event: a row that opens to show details and actions.
+import DateBadge from "./DateBadge.astro";
+import ProgramTag from "./ProgramTag.astro";
+import { whenText, shortTime } from "../lib/format.js";
+import { googleCalendarLink, directionsLink } from "../lib/ics.js";
+import { link } from "../lib/urls.js";
+
+interface Props {
+  event: import("../lib/events.js").CalendarEvent;
+  idPrefix: string;
+  hideWhenPast?: boolean;
+}
+
+const { event, idPrefix, hideWhenPast = true } = Astro.props;
+const when = whenText(event);
+// Marked at build time too, so past events never flash in; the browser script keeps it current.
+const past = hideWhenPast && Date.parse(event.end) < Date.now();
+---
+
+<li
+  class:list={["event", { "is-past": past }]}
+  id={`${idPrefix}-${event.id}`}
+  data-program={event.program}
+  data-end={event.end}
+  data-hide-when-past={hideWhenPast ? "" : undefined}
+>
+  <details>
+    <summary>
+      <DateBadge event={event} />
+      <span class="event-main">
+        <span class="event-title">{event.title}</span>
+        <span class="event-meta">
+          <span class="sr-only">{when}.</span>
+          <span aria-hidden="true">{shortTime(event)}</span>
+          <ProgramTag program={event.program} />
+        </span>
+      </span>
+      <svg class="event-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </summary>
+    <div class="event-details">
+      <dl>
+        <dt>When</dt>
+        <dd>{when}</dd>
+        {
+          event.location && (
+            <>
+              <dt>Where</dt>
+              <dd>{event.location}</dd>
+            </>
+          )
+        }
+      </dl>
+      {event.description && <p class="event-description">{event.description}</p>}
+      <div class="btn-row">
+        <a class="btn btn-small" href={link(`events/${event.id}.ics`)} download={`${event.id}.ics`}>
+          Add to calendar<span class="sr-only">: {event.title}</span>
+        </a>
+        <a class="btn btn-small btn-outline" href={googleCalendarLink(event)} target="_blank" rel="noopener">
+          Add to Google Calendar<span class="sr-only">: {event.title} (opens in a new tab)</span>
+        </a>
+        {
+          event.location && (
+            <a class="btn btn-small btn-outline" href={directionsLink(event.location)} target="_blank" rel="noopener">
+              Get directions<span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          )
+        }
+        {
+          event.parentSquareUrl && (
+            <a class="btn btn-small btn-outline" href={event.parentSquareUrl} target="_blank" rel="noopener">
+              Related ParentSquare post<span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </details>
+</li>

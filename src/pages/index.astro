@@ -1,0 +1,184 @@
+---
+import Base from "../layouts/Base.astro";
+import EventItem from "../components/EventItem.astro";
+import FilterChips from "../components/FilterChips.astro";
+import ProgramTag from "../components/ProgramTag.astro";
+import DateBadge from "../components/DateBadge.astro";
+import WhoToAsk from "../components/WhoToAsk.astro";
+import { getAllEvents } from "../lib/calendar.js";
+import { programs } from "../lib/programs.js";
+import { whenText } from "../lib/format.js";
+import { link } from "../lib/urls.js";
+import site from "../content/site.json";
+
+const events = await getAllEvents();
+const now = Date.now();
+const upcoming = events.filter((event) => Date.parse(event.end) >= now);
+
+// The browser shows the first 4 that match the chosen programs, so render
+// enough for any single program to fill the list.
+const upcomingForList = programs.flatMap((program) => upcoming.filter((event) => event.program === program.id).slice(0, 4));
+const listEvents = upcoming.filter((event) => upcomingForList.includes(event));
+
+const bigDates = upcoming.filter((event) => event.big);
+
+// ParentSquare posts linked from events: upcoming ones first, then the most recent past ones.
+const withPost = events.filter((event) => event.parentSquareUrl);
+const seen = new Set();
+const posts = [
+  ...withPost.filter((event) => Date.parse(event.end) >= now),
+  ...withPost.filter((event) => Date.parse(event.end) < now).reverse(),
+]
+  .filter((event) => !seen.has(event.parentSquareUrl) && seen.add(event.parentSquareUrl))
+  .slice(0, 3);
+---
+
+<Base current="home">
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <p class="eyebrow">{site.schoolName}</p>
+      <h1>{site.departmentName}</h1>
+      <p class="hero-lead">{site.tagline}</p>
+      <div class="btn-row">
+        <a class="btn" href={link("calendar/")}>See the calendar</a>
+        <a class="btn btn-outline" href={link("calendar/#subscribe-all")}>Put it on your phone</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="programs-heading">
+    <div class="wrap">
+      <h2 id="programs-heading">Programs</h2>
+      <ul class="program-cards">
+        {
+          programs.map((program) => (
+            <li class={`program-card p-${program.id}`}>
+              <a href={link(`${program.id}/`)}>
+                <span class="program-card-band" aria-hidden="true" />
+                <span class="program-card-body">
+                  <span class="program-card-name">{program.name}</span>
+                  <span class="program-card-text">{program.description}</span>
+                  <span class="program-card-facts">
+                    {program.grades} · {program.meets}
+                  </span>
+                  <span class="program-card-more">
+                    About {program.name} <span aria-hidden="true">→</span>
+                  </span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="coming-up-heading" data-events>
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="coming-up-heading">Coming up</h2>
+        <a class="text-link" href={link("calendar/")}>Full calendar</a>
+      </div>
+      <FilterChips legend="Filter by program" idPrefix="home-filter" />
+      <div data-list>
+        <ul class="event-list" data-limit="4">
+          {listEvents.map((event) => <EventItem event={event} idPrefix="home" />)}
+        </ul>
+        <p class="empty-note" data-empty hidden={listEvents.length > 0}>
+          Nothing scheduled yet. Check back soon.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {
+    bigDates.length > 0 && (
+      <section class="big-dates" aria-labelledby="big-dates-heading" data-events>
+        <div class="wrap">
+          <h2 id="big-dates-heading">Big dates this year</h2>
+          <ul class="big-date-list">
+            {bigDates.map((event) => (
+              <li class="big-date" data-program={event.program} data-end={event.end} data-hide-when-past>
+                <DateBadge event={event} />
+                <div>
+                  <a class="big-date-title" href={link(`calendar/#list-${event.id}`)}>
+                    {event.title}
+                  </a>
+                  <p class="big-date-when">{whenText(event)}</p>
+                  <ProgramTag program={event.program} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section split" aria-label="More">
+    <div class="wrap split-inner">
+      <section class="card" aria-labelledby="ps-heading">
+        <h2 id="ps-heading">Latest from ParentSquare</h2>
+        {
+          posts.length > 0 ? (
+            <ul class="link-list">
+              {posts.map((event) => (
+                <li>
+                  <a href={event.parentSquareUrl} target="_blank" rel="noopener">
+                    {event.title}
+                    <span class="sr-only"> (opens ParentSquare in a new tab)</span>
+                  </a>
+                  <span class="muted"> · <ProgramTag program={event.program} /></span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="muted">No posts linked yet.</p>
+          )
+        }
+        <p class="card-foot">
+          Announcements and alerts go out on <a href={site.parentSquareUrl}>ParentSquare</a>.
+        </p>
+      </section>
+      <WhoToAsk headingLevel={2} />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { background: var(--wash); padding: 40px 0 44px; }
+  .eyebrow { font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+  .hero h1 { margin-bottom: 12px; }
+  .hero h1::after { content: ""; display: block; width: 64px; height: 6px; background: var(--orange); border-radius: 999px; margin-top: 14px; }
+  .hero-lead { max-width: 56ch; font-size: 1.15rem; margin-bottom: 22px; }
+
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  .program-cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+  @media (min-width: 760px) { .program-cards { grid-template-columns: repeat(3, 1fr); } }
+  .program-card a {
+    display: flex; flex-direction: column; height: 100%; text-decoration: none;
+    border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; background: var(--white);
+  }
+  .program-card a:hover { border-color: var(--p); box-shadow: 0 4px 16px rgba(20, 48, 94, 0.08); }
+  .program-card-band { display: block; height: 10px; background: var(--p); }
+  .program-card-body { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px 20px; flex: 1; }
+  .program-card-name { font: 700 1.4rem var(--font-heading); color: var(--p); }
+  .program-card-facts { font-size: 0.92rem; color: var(--muted); }
+  .program-card-more { margin-top: auto; padding-top: 8px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+
+  .big-dates { background: var(--navy); color: var(--white); padding: 36px 0; margin: 8px 0 40px; }
+  .big-dates h2 { color: var(--white); }
+  .big-date-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .big-date { display: flex; gap: 14px; align-items: flex-start; background: var(--navy-light); border-radius: var(--radius); padding: 16px; }
+  .big-date-title { color: var(--white); font-weight: 700; font-size: 1.05rem; display: inline-block; min-height: 24px; }
+  .big-date-when { color: #d6deec; font-size: 0.92rem; margin: 2px 0 8px; }
+  .big-dates :focus-visible { outline-color: var(--orange); }
+
+  .split-inner { display: grid; gap: 16px; }
+  @media (min-width: 760px) { .split-inner { grid-template-columns: 1fr 1fr; } }
+  .link-list { list-style: none; padding: 0; margin: 0 0 12px; }
+  .link-list li { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .link-list a { font-weight: 700; }
+  .card-foot { margin: 0; font-size: 0.95rem; }
+</style>

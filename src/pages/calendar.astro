@@ -1,0 +1,220 @@
+---
+import Base from "../layouts/Base.astro";
+import EventItem from "../components/EventItem.astro";
+import FilterChips from "../components/FilterChips.astro";
+import SubscribeCard from "../components/SubscribeCard.astro";
+import { getAllEvents, timeZone, isUsingSampleData } from "../lib/calendar.js";
+import { dateKey, addDays } from "../lib/events.js";
+import { monthLabel } from "../lib/format.js";
+import { programById } from "../lib/programs.js";
+
+const events = await getAllEvents();
+const thisMonth = dateKey(new Date(), timeZone).slice(0, 7);
+
+// List view: events grouped by the month they start in.
+const groups = [];
+for (const event of events) {
+  const month = event.startDate.slice(0, 7);
+  if (groups.at(-1)?.month !== month) groups.push({ month, events: [] });
+  groups.at(-1).events.push(event);
+}
+
+// Month view: every month from the earliest event (or this month) to the latest.
+const monthKeys = [];
+const firstMonth = [events[0]?.startDate.slice(0, 7), thisMonth].filter(Boolean).sort()[0];
+const lastMonth = [events.at(-1)?.endDate.slice(0, 7), thisMonth].filter(Boolean).sort().at(-1);
+for (let key = firstMonth; key <= lastMonth; key = addDays(`${key}-28`, 7).slice(0, 7)) monthKeys.push(key);
+
+const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+const months = monthKeys.map((key) => {
+  const first = `${key}-01`;
+  const startWeekday = new Date(`${first}T12:00:00Z`).getUTCDay();
+  const daysInMonth = new Date(Date.UTC(Number(key.slice(0, 4)), Number(key.slice(5, 7)), 0)).getUTCDate();
+  const cells = [...Array(startWeekday).fill(null)];
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const date = `${key}-${String(day).padStart(2, "0")}`;
+    cells.push({ day, date, events: events.filter((event) => event.startDate <= date && event.endDate >= date) });
+  }
+  while (cells.length % 7) cells.push(null);
+  const weeks = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+  const monthEvents = events.filter((event) => event.startDate.slice(0, 7) <= key && event.endDate.slice(0, 7) >= key);
+  return { key, name: monthLabel(key), weeks, events: monthEvents };
+});
+
+const initials = (name) => name.split(/\s+/).map((word) => word[0]).join("").toUpperCase();
+---
+
+<Base title="Calendar" current="calendar" description="Art, Choir, and Musical Theater dates in one place.">
+  <section class="page-hero">
+    <div class="wrap">
+      <h1>Calendar</h1>
+      <p>Every Art, Choir, and Musical Theater date in one place. Tap an event for details.</p>
+      {isUsingSampleData() && <p class="sample-note">Showing sample events until the real calendars are connected.</p>}
+    </div>
+  </section>
+
+  <div class="wrap calendar-layout" data-events>
+    <aside class="calendar-side">
+      <FilterChips checkboxes idPrefix="cal-filter" />
+    </aside>
+
+    <div class="calendar-main">
+      <div class="view-toggle" role="group" aria-label="Calendar view">
+        <button type="button" class="toggle-btn" data-view="list" aria-pressed="true">List</button>
+        <button type="button" class="toggle-btn" data-view="month" aria-pressed="false">Month</button>
+      </div>
+
+      <div data-view-panel="list" data-list>
+        <button type="button" class="text-link past-toggle" data-past-toggle hidden>Show past events</button>
+        {
+          groups.map((group) => (
+            <section class="month-group" data-group aria-labelledby={`list-${group.month}`}>
+              <h2 id={`list-${group.month}`} class="month-heading">
+                {monthLabel(group.month)}
+              </h2>
+              <ul class="event-list">
+                {group.events.map((event) => (
+                  <EventItem event={event} idPrefix="list" />
+                ))}
+              </ul>
+            </section>
+          ))
+        }
+        <p class="empty-note" data-empty hidden>No upcoming events for the programs you picked.</p>
+      </div>
+
+      <div data-view-panel="month" hidden>
+        <div class="month-nav">
+          <button type="button" class="btn btn-small btn-outline" data-month-nav="-1" aria-label="Previous month">‹ Prev</button>
+          <h2 class="month-nav-label" data-month-label aria-live="polite">{monthLabel(thisMonth)}</h2>
+          <button type="button" class="btn btn-small btn-outline" data-month-nav="1" aria-label="Next month">Next ›</button>
+        </div>
+        {
+          months.map((month) => (
+            <div data-month-panel={month.key} data-month-name={month.name} hidden={month.key !== thisMonth}>
+              <table class="month-grid">
+                <caption class="sr-only">{month.name}</caption>
+                <thead>
+                  <tr>
+                    {weekdays.map((day, i) => (
+                      <th scope="col">
+                        <abbr title={weekdayNames[i]}>{day}</abbr>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {month.weeks.map((week) => (
+                    <tr>
+                      {week.map((cell) =>
+                        cell ? (
+                          <td data-date={cell.date}>
+                            <span class="day-number">{cell.day}</span>
+                            {cell.events.map((event) => (
+                              <a
+                                class={`pill p-${event.program}`}
+                                href={`#m-${month.key}-${event.id}`}
+                                data-open
+                                data-pill
+                                data-program={event.program}
+                              >
+                                <span class="pill-short" aria-hidden="true">
+                                  {initials(programById[event.program].name)}
+                                </span>
+                                <span class="pill-title">
+                                  <span class="sr-only">{programById[event.program].name}: </span>
+                                  {event.title}
+                                </span>
+                              </a>
+                            ))}
+                          </td>
+                        ) : (
+                          <td class="day-blank" />
+                        ),
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div data-list>
+                <h3 class="month-list-heading">Events in {month.name}</h3>
+                <ul class="event-list">
+                  {month.events.map((event) => (
+                    <EventItem event={event} idPrefix={`m-${month.key}`} hideWhenPast={false} />
+                  ))}
+                </ul>
+                <p class="empty-note" data-empty hidden={month.events.length > 0}>
+                  No events this month.
+                </p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="calendar-subscribe">
+      <SubscribeCard />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .sample-note { margin-top: 10px !important; font-size: 0.9rem; color: var(--muted); }
+
+  .calendar-layout { display: grid; gap: 24px; }
+  .calendar-main { min-width: 0; }
+  .month-grid td { position: relative; }
+  @media (min-width: 900px) {
+    .calendar-layout { grid-template-columns: 280px 1fr; grid-template-rows: auto 1fr; gap: 24px 40px; align-items: start; }
+    .calendar-side { grid-column: 1; grid-row: 1; }
+    .calendar-main { grid-column: 2; grid-row: 1 / span 2; }
+    .calendar-subscribe { grid-column: 1; grid-row: 2; }
+  }
+
+  .view-toggle { display: inline-flex; border: 2px solid var(--navy); border-radius: 999px; padding: 3px; margin-bottom: 20px; }
+  .toggle-btn {
+    min-height: 40px; min-width: 88px; padding: 0 18px; border: 0; border-radius: 999px;
+    background: transparent; color: var(--navy); font: 700 1rem var(--font-body); cursor: pointer;
+  }
+  .toggle-btn[aria-pressed="true"] { background: var(--navy); color: var(--white); }
+
+  .past-toggle { margin-bottom: 8px; }
+  .month-group { margin-bottom: 28px; }
+  .month-heading { font-size: 1.25rem; margin-bottom: 8px; }
+
+  .month-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+  .month-nav-label { margin: 0; font-size: 1.25rem; text-align: center; }
+  .month-nav .btn:disabled { opacity: 0.4; cursor: default; }
+
+  .month-grid { width: 100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 24px; }
+  .month-grid th { font-size: 0.8rem; padding: 6px 0; color: var(--muted); }
+  .month-grid abbr { text-decoration: none; }
+  .month-grid td { border: 1px solid var(--rule); vertical-align: top; height: 64px; padding: 4px; }
+  .month-grid td.is-today { background: var(--wash); }
+  .month-grid td.is-today .day-number { background: var(--navy); color: var(--white); }
+  .day-blank { background: #fafbfd; }
+  .day-number {
+    display: inline-grid; place-items: center; min-width: 24px; height: 24px; border-radius: 999px;
+    font-size: 0.85rem; font-weight: 700;
+  }
+  .pill {
+    display: flex; align-items: center; gap: 4px; margin-top: 3px; min-height: 22px; padding: 1px 6px;
+    border-radius: 6px; background: var(--p-tag-bg); color: var(--p-tag-text); border-left: 4px solid var(--p);
+    font-size: 0.75rem; font-weight: 700; text-decoration: none; line-height: 1.3; overflow: hidden;
+  }
+  .pill-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  /* Phones: the cell only fits the program's initials; the full title stays readable by screen readers. */
+  @media (max-width: 699px) {
+    .pill { justify-content: center; padding: 1px 2px; }
+    .pill-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  }
+  @media (min-width: 700px) {
+    .month-grid td { height: 96px; padding: 6px; }
+    .pill-short { display: none; }
+  }
+  .month-list-heading { margin-top: 8px; }
+</style>

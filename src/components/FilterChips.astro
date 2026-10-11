@@ -1,0 +1,21 @@
+---
+// Program filters. Shown as chips on phones; `checkboxes` turns them into
+// a plain checkbox list on wider screens.
+import { programs } from "../lib/programs.js";
+
+const { legend = "Show programs", checkboxes = false, idPrefix } = Astro.props;
+---
+
+<fieldset class:list={["filters", { "filters-checkboxes": checkboxes }]} data-filter>
+  <legend>{legend}</legend>
+  <div class="filter-options">
+    {
+      programs.map((program) => (
+        <label class={`chip p-${program.id}`} for={`${idPrefix}-${program.id}`}>
+          <input type="checkbox" id={`${idPrefix}-${program.id}`} name="program" value={program.id} checked />
+          <span>{program.name}</span>
+        </label>
+      ))
+    }
+  </div>
+</fieldset>

@@ -1,0 +1,11 @@
+---
+import { badgeParts } from "../lib/format.js";
+
+const { event } = Astro.props;
+const { month, day } = badgeParts(event);
+---
+
+<span class="badge" aria-hidden="true">
+  <span class="badge-month">{month}</span>
+  <span class="badge-day">{day}</span>
+</span>

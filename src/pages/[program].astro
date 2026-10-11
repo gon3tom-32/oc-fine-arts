@@ -1,0 +1,138 @@
+---
+// One template for every program (Art, Choir, Musical Theater).
+// The text comes from src/content/programs/<program>.md.
+import Base from "../layouts/Base.astro";
+import EventItem from "../components/EventItem.astro";
+import SubscribeCard from "../components/SubscribeCard.astro";
+import { programs } from "../lib/programs.js";
+import { getAllEvents } from "../lib/calendar.js";
+import { link } from "../lib/urls.js";
+import site from "../content/site.json";
+
+export function getStaticPaths() {
+  return programs.map((program) => ({ params: { program: program.id }, props: { program } }));
+}
+
+const { program } = Astro.props;
+const { Content } = program;
+const now = Date.now();
+const events = (await getAllEvents()).filter((event) => event.program === program.id && Date.parse(event.end) >= now);
+const LIMIT = 6;
+const hasPlaceholderPdf = !program.scheduleUrl;
+// A bare file name like "choir-schedule.pdf" points to a file in public/.
+const scheduleHref = /^(https?:)?\//.test(program.scheduleUrl) ? program.scheduleUrl : link(program.scheduleUrl);
+---
+
+<Base title={program.name} current={program.id} description={program.description}>
+  <section class={`program-hero p-${program.id}`}>
+    <div class="wrap">
+      <h1>{program.name}</h1>
+      <p class="program-lead">{program.description}</p>
+      <dl class="facts">
+        <div><dt>Grades</dt><dd>{program.grades}</dd></div>
+        <div><dt>Meets</dt><dd>{program.meets}</dd></div>
+        <div><dt>Where</dt><dd>{program.where}</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="wrap program-layout">
+    <div class="program-main">
+      <section class="section" aria-labelledby="coming-up" data-events>
+        <h2 id="coming-up">Coming up in {program.name}</h2>
+        <div data-list>
+          <ul class="event-list" data-limit={LIMIT}>
+            {events.map((event) => <EventItem event={event} idPrefix="program" />)}
+          </ul>
+          <p class="empty-note" data-empty hidden={events.length > 0}>Nothing scheduled yet. Check back soon.</p>
+        </div>
+        <p class="more-link">
+          <a class="text-link" href={link("calendar/")}>See everything on the calendar</a>
+        </p>
+      </section>
+
+      <section class="section prose" aria-label="What to expect">
+        <Content />
+      </section>
+
+      <section class="section" aria-labelledby="bring">
+        <h2 id="bring">What to bring</h2>
+        <ul class="checklist">
+          {program.whatToBring.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      <section class="section" aria-labelledby="good-to-know">
+        <h2 id="good-to-know">Good to know</h2>
+        <dl class="good-to-know">
+          {
+            program.goodToKnow.map((item) => (
+              <div>
+                <dt>{item.label}</dt>
+                <dd>{item.text}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        {
+          hasPlaceholderPdf ? (
+            <p class="muted">[{program.scheduleLabel}: link coming soon]</p>
+          ) : (
+            <a class="btn btn-outline" href={scheduleHref}>
+              {program.scheduleLabel}
+            </a>
+          )
+        }
+      </section>
+    </div>
+
+    <aside class="program-side">
+      <SubscribeCard only={program} />
+      <section class="card contact-card" aria-labelledby="teacher">
+        <h2 id="teacher">Questions about {program.name}?</h2>
+        <p>
+          <strong>{site.teacher.name}</strong><br />
+          {site.teacher.title}
+        </p>
+        <a class="btn" href={`mailto:${site.teacher.email}?subject=${encodeURIComponent(program.name + " question")}`}>
+          Email the teacher
+        </a>
+      </section>
+    </aside>
+  </div>
+</Base>
+
+<style>
+  .program-hero { background: var(--p); color: var(--white); padding: 36px 0 32px; }
+  .program-hero h1 { color: var(--white); }
+  .program-lead { font-size: 1.15rem; max-width: 56ch; }
+  .facts { display: flex; flex-wrap: wrap; gap: 12px 32px; margin: 18px 0 0; }
+  .facts dt { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; }
+  .facts dd { margin: 0; font-weight: 700; }
+
+  .program-layout { display: grid; gap: 8px; }
+  .program-main { min-width: 0; }
+  .program-side { display: grid; gap: 16px; align-content: start; padding-bottom: 24px; }
+  @media (min-width: 900px) {
+    .program-layout { grid-template-columns: 1fr 320px; gap: 40px; }
+    .program-side { padding-top: 40px; position: sticky; top: 0; }
+  }
+  .program-main .section { padding: 32px 0 0; }
+  .more-link { margin: 8px 0 0; }
+
+  .prose :global(h2) { margin-top: 0; }
+  .prose :global(p) { max-width: 65ch; }
+
+  .checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .checklist li { position: relative; padding-left: 32px; }
+  .checklist li::before {
+    content: "✓"; position: absolute; left: 0; top: 2px; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--orange); color: var(--navy); font-size: 0.8rem; font-weight: 700; display: grid; place-items: center;
+  }
+  .good-to-know { margin: 0 0 16px; }
+  .good-to-know div { padding: 12px 0; border-bottom: 1px solid var(--rule); }
+  .good-to-know dt { font-weight: 700; }
+  .good-to-know dd { margin: 0; }
+
+  .contact-card h2 { font-size: 1.2rem; }
+</style>
