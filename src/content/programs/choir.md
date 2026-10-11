@@ -2,8 +2,8 @@
 # Edit the text between the quotes. Keep the dashes and indentation as they are.
 name: "Choir"
 order: 2
-description: "[One line about the choir program.]"
-grades: "[Grades, for example 3-5]"
+description: "Eagle Choristers is an after-school vocal ensemble where students learn the fundamentals of vocal production and performance."
+grades: "3rd–5th"
 meets: "[Meeting days and times]"
 where: "[Room]"
 whatToBring:
@@ -20,6 +20,6 @@ scheduleUrl: ""
 
 ## What to expect
 
-[A short paragraph about rehearsals and performances.]
+The Eagle Choristers meet after school. [A short paragraph about rehearsals and performances.]
 
 [A second paragraph if needed, for example how students prepare for concerts.]

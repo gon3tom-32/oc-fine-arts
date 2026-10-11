@@ -1,17 +1,23 @@
 {
   "schoolName": "Orange County Classical Academy",
   "departmentName": "Fine Arts",
-  "tagline": "[One sentence about the fine arts program, for example what students learn and why it matters.]",
+  "tagline": "Students receive a formal education in art and music that blends historical, theoretical, and hands-on study.",
+  "motto": "Ut corda nostra sapiant: That our hearts may be wise",
   "teacher": {
     "name": "[Teacher name]",
     "title": "Fine Arts Teacher",
     "email": "teacher@example.org"
   },
+  "schoolPhone": "(657) 223-9420",
+  "campuses": [
+    { "name": "Lower School", "address": "4100 E. Walnut Ave, Orange, CA 92869" },
+    { "name": "Upper School", "address": "2200 N. Grand Ave, Santa Ana, CA 92705" }
+  ],
   "parentSquareUrl": "https://www.parentsquare.com/",
   "whoToAsk": [
     { "topic": "Rehearsals, concerts, art supplies, attire", "who": "[Teacher name]", "email": "teacher@example.org" },
-    { "topic": "Absences and early pickup", "who": "[School front office]", "email": "office@example.org" },
-    { "topic": "ParentSquare login or notifications", "who": "[School front office]", "email": "office@example.org" }
+    { "topic": "Absences and early pickup", "who": "School office", "phone": "(657) 223-9420" },
+    { "topic": "ParentSquare login or notifications", "who": "School office", "phone": "(657) 223-9420" }
   ],
   "footerNote": "Student photos shared only with approval"
 }

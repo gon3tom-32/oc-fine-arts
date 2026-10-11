@@ -2,8 +2,8 @@
 # Edit the text between the quotes. Keep the dashes and indentation as they are.
 name: "Art"
 order: 1
-description: "[One line about the art program.]"
-grades: "[Grades, for example K-5]"
+description: "Students in art follow the classical Western canon of great works, blending historical and theoretical study with artistic creation in studio time."
+grades: "K–8th"
 meets: "[Meeting days and times]"
 where: "[Room]"
 whatToBring:

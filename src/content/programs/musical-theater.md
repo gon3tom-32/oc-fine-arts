@@ -2,8 +2,8 @@
 # Edit the text between the quotes. Keep the dashes and indentation as they are.
 name: "Musical Theater"
 order: 3
-description: "[One line about the musical theater program.]"
-grades: "[Grades]"
+description: "Students bring the stage to life, developing skills in acting, singing, and stage presence."
+grades: "3rd–5th, 6th–11th"
 meets: "[Meeting days and times]"
 where: "[Room or stage]"
 whatToBring:
@@ -21,5 +21,7 @@ scheduleUrl: ""
 ---
 
 ## What to expect
+
+Recent productions include *Alice in Wonderland* and *Mary Poppins*.
 
 [A short paragraph about the production, rehearsals, and performances.]

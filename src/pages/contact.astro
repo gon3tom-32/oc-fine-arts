@@ -2,6 +2,7 @@
 import Base from "../layouts/Base.astro";
 import WhoToAsk from "../components/WhoToAsk.astro";
 import site from "../content/site.json";
+import { directionsLink } from "../lib/ics.js";
 ---
 
 <Base title="Contact" current="contact" description="Who to ask about Art, Choir, and Musical Theater.">
@@ -25,6 +26,26 @@ import site from "../content/site.json";
       <p>News, reminders, and alerts go out on ParentSquare. This site is where to check dates and details.</p>
       <a class="btn btn-outline" href={site.parentSquareUrl}>Open ParentSquare</a>
     </section>
+    <section class="card" aria-labelledby="campus-heading">
+      <h2 id="campus-heading">Campuses</h2>
+      <dl class="campuses">
+        {
+          site.campuses.map((campus) => (
+            <div>
+              <dt>{campus.name}</dt>
+              <dd>
+                {campus.address}
+                <br />
+                <a href={directionsLink(campus.address)} target="_blank" rel="noopener">
+                  Get directions<span class="sr-only"> to the {campus.name} (opens in a new tab)</span>
+                </a>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p>School office: <a href={`tel:${site.schoolPhone.replace(/[^\d+]/g, "")}`}>{site.schoolPhone}</a></p>
+    </section>
   </div>
 </Base>
 
@@ -32,4 +53,9 @@ import site from "../content/site.json";
   .contact-layout { display: grid; gap: 16px; }
   @media (min-width: 760px) { .contact-layout { grid-template-columns: 1fr 1fr; } }
   .contact-layout a { overflow-wrap: anywhere; }
+  .campuses { margin: 0 0 12px; }
+  .campuses div { padding: 8px 0; }
+  .campuses dt { font-weight: 700; }
+  .campuses dd { margin: 0; }
+  .campuses a { display: inline-flex; align-items: center; min-height: var(--tap); font-weight: 700; }
 </style>

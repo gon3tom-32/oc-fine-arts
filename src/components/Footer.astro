@@ -12,6 +12,7 @@ import { link } from "../lib/urls.js";
       Questions? <a href={link("contact/")}>Who to ask</a> · Announcements are on{" "}
       <a href={site.parentSquareUrl}>ParentSquare</a>
     </p>
+    {site.motto && <p class="footer-motto">{site.motto}</p>}
     <p class="footer-note">{site.footerNote}</p>
   </div>
 </footer>
@@ -19,5 +20,6 @@ import { link } from "../lib/urls.js";
 <style>
   .site-footer { background: var(--wash); margin-top: 48px; padding: 28px 0; font-size: 0.95rem; }
   .footer-inner p { margin: 0 0 6px; }
+  .footer-motto { font-style: italic; }
   .footer-note { color: var(--muted); }
 </style>
