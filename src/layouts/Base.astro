@@ -4,6 +4,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import site from "../content/site.json";
 import { timeZone } from "../lib/calendar.js";
+import { link } from "../lib/urls.js";
 
 interface Props {
   title?: string;
@@ -23,7 +24,8 @@ const fullTitle = title ? `${title} · ${site.departmentName} · ${site.schoolNa
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#14305E" />
-    <link rel="icon" href={`${import.meta.env.BASE_URL.replace(/\/?$/, "/")}favicon.svg`} type="image/svg+xml" />
+    <link rel="icon" href={link("favicon.png")} type="image/png" />
+    <link rel="apple-touch-icon" href={link("apple-touch-icon.png")} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

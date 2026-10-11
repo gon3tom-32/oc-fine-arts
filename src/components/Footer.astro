@@ -5,6 +5,7 @@ import { link } from "../lib/urls.js";
 
 <footer class="site-footer">
   <div class="wrap footer-inner">
+    <img class="footer-logo" src={link("logo.png")} alt={site.schoolName} width="900" height="243" loading="lazy" />
     <p>
       <strong>{site.departmentName}</strong> · {site.schoolName}
     </p>
@@ -20,6 +21,7 @@ import { link } from "../lib/urls.js";
 <style>
   .site-footer { background: var(--wash); margin-top: 48px; padding: 28px 0; font-size: 0.95rem; }
   .footer-inner p { margin: 0 0 6px; }
+  .footer-logo { display: block; width: 260px; max-width: 100%; height: auto; margin-bottom: 16px; }
   .footer-motto { font-style: italic; }
   .footer-note { color: var(--muted); }
 </style>

@@ -14,10 +14,7 @@ const items = [
 <header class="site-header">
   <div class="wrap header-inner">
     <a class="brand" href={link()}>
-      <span class="logo" aria-hidden="true">
-        <!-- Placeholder mark. Replace with the school logo. -->
-        OC
-      </span>
+      <img class="logo" src={link("crest.png")} alt="" width="146" height="180" />
       <span class="brand-text">
         <span class="brand-dept">{site.departmentName}</span>
         <span class="brand-school">{site.schoolName}</span>
@@ -43,10 +40,7 @@ const items = [
   .site-header { border-bottom: 1px solid var(--rule); background: var(--white); }
   .header-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; padding-top: 12px; padding-bottom: 12px; }
   .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; min-height: var(--tap); }
-  .logo {
-    width: 44px; height: 44px; border-radius: 50%; background: var(--orange); color: var(--navy);
-    display: grid; place-items: center; font: 700 1rem var(--font-heading); flex: none;
-  }
+  .logo { width: auto; height: 52px; flex: none; }
   .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
   .brand-dept { font: 700 1.15rem var(--font-heading); }
   .brand-school { font-size: 0.85rem; color: var(--muted); }

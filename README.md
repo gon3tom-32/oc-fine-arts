@@ -35,7 +35,7 @@ If an edit breaks the site, the build fails and the previous version stays live.
 
 1. **GitHub Pages.** In the repository's **Settings → Pages**, set **Source** to **GitHub Actions**. The workflow in `.github/workflows/deploy.yml` then builds and publishes the site on every change and every hour.
 2. **Google Calendars.** Create three calendars (Art, Choir, Musical Theater) in the account that will own them. For each one, open **Settings → [calendar] → Access permissions** and turn on **Make available to public**. Then copy **Public address in iCal format** from **Integrate calendar** and paste it as that program's `icsUrl` in [`src/content/calendars.json`](src/content/calendars.json). Until a program has an `icsUrl`, the site shows the sample events in [`sample-data/`](sample-data/).
-3. **Replace placeholders.** Everything in `[square brackets]` is a placeholder. That includes the logo (the orange "OC" circle in `src/components/Header.astro` and `public/favicon.svg`), teacher details, program text, and the ParentSquare address.
+3. **Replace placeholders.** Everything in `[square brackets]` is a placeholder. That includes teacher details, meeting times, rooms, and the ParentSquare address. The school logo files are in `public/` (`crest.png`, `logo.png`, `favicon.png`, `apple-touch-icon.png`).
 
 GitHub pauses hourly workflows in repositories with no activity for 60 days. If new events stop appearing, open the **Actions** tab and re-enable the workflow, or run it by hand with **Run workflow**.
 

@@ -3,7 +3,7 @@
 name: "Musical Theater"
 order: 3
 description: "Students bring the stage to life, developing skills in acting, singing, and stage presence."
-grades: "3rd–5th, 6th–11th"
+grades: "3rd–5th"
 meets: "[Meeting days and times]"
 where: "[Room or stage]"
 whatToBring:
